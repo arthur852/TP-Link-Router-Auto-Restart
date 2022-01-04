@@ -2,13 +2,23 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <RootNamespace>TP_Link_Router_Auto_Restart</RootNamespace>
+    <StartupObject>TP_Link_Router_Auto_Restart.Program</StartupObject>
+    <ApplicationIcon>router_icon_144153.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="router_icon_144153.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Selenium.WebDriver" Version="4.1.0" />
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="96.0.4664.4500" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

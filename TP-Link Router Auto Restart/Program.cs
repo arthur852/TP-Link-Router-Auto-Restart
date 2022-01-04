@@ -9,14 +9,19 @@ namespace TP_Link_Router_Auto_Restart
     {
         private static void Main(string[] args)
         {
+            bool testMode = false;
             var options = new ChromeOptions();
 
             foreach (var arg in args)
             {
-                if (arg == "-headless")
+                switch (arg)
                 {
-                    options.AddArgument("headless");
-                    break;
+                    case "-headless":
+                        options.AddArgument("headless");
+                        break;
+                    case "-test":
+                        testMode = true;
+                        break;
                 }
             }
             
@@ -120,8 +125,11 @@ namespace TP_Link_Router_Auto_Restart
 
             IAlert alert = driver.SwitchTo().Alert();
 
-            //alert.Accept();
-
+            if (!testMode)
+            {
+                alert.Accept();
+            }
+            
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("The router is rebooting...");
             Console.ResetColor();
