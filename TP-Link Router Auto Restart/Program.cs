@@ -10,6 +10,7 @@ namespace TP_Link_Router_Auto_Restart
         private static void Main(string[] args)
         {
             bool testMode = false;
+            ushort waitingTime = 400;
             var options = new ChromeOptions();
 
             foreach (var arg in args)
@@ -24,38 +25,61 @@ namespace TP_Link_Router_Auto_Restart
                         break;
                 }
             }
-            
+
             string url = "http://192.168.0.1/";
             string login = "admin";
             string password = "admin";
 
             IWebDriver driver = new ChromeDriver(options);
-            Console.Clear();
 
-            driver.Navigate().GoToUrl(url);
+            try
+            {
+                driver.Navigate().GoToUrl(url);
+            }
+            catch (WebDriverArgumentException e)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("Incorrect link!");
+                Console.WriteLine(e);
+                Console.ResetColor();
+                throw;
+            }
+
+            Console.Clear();
             Console.WriteLine($"Connect to {url}");
             Console.WriteLine("Page title is: " + driver.Title);
 
             IWebElement query;
 
+            Thread.Sleep(waitingTime);
+
             try
             {
-                query = driver.FindElement(By.Id("userName"));
+                query = driver.FindElement(By.XPath("/html/body/div[2]/div[2]/div/ul/li[1]/input"));
                 query.SendKeys(login);
             }
             catch (NoSuchElementException e)
             {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(e);
+                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("Field Login is not exist.");
+                Console.ResetColor();
             }
-            
+
+            Thread.Sleep(waitingTime);
+
             query = driver.FindElement(By.Id("pcPassword"));
             query.SendKeys(password);
+
+            Thread.Sleep(waitingTime);
 
             query = driver.FindElement(By.Id("loginBtn"));
             query.Click();
 
             driver.SwitchTo().Frame("bottomLeftFrame");
+
+            Thread.Sleep(waitingTime);
 
             try
             {
@@ -63,7 +87,9 @@ namespace TP_Link_Router_Auto_Restart
             }
             catch (NoSuchElementException e)
             {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(e);
+                Console.ResetColor();
 
                 try
                 {
@@ -71,12 +97,16 @@ namespace TP_Link_Router_Auto_Restart
                 }
                 catch (NoSuchElementException ex)
                 {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine(ex);
+                    Console.ResetColor();
                     throw;
                 }
             }
 
             query.Click();
+
+            Thread.Sleep(waitingTime);
 
             try
             {
@@ -84,7 +114,9 @@ namespace TP_Link_Router_Auto_Restart
             }
             catch (NoSuchElementException e)
             {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(e);
+                Console.ResetColor();
 
                 try
                 {
@@ -92,7 +124,9 @@ namespace TP_Link_Router_Auto_Restart
                 }
                 catch (NoSuchElementException ex)
                 {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine(ex);
+                    Console.ResetColor();
                     throw;
                 }
             }
@@ -102,13 +136,17 @@ namespace TP_Link_Router_Auto_Restart
             driver.SwitchTo().DefaultContent();
             driver.SwitchTo().Frame("mainFrame");
 
+            Thread.Sleep(waitingTime);
+
             try
             {
                 query = driver.FindElement(By.XPath("/html/body/center/form/table/tbody/tr[4]/td/input"));
             }
             catch (NoSuchElementException e)
             {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(e);
+                Console.ResetColor();
 
                 try
                 {
@@ -116,12 +154,16 @@ namespace TP_Link_Router_Auto_Restart
                 }
                 catch (NoSuchElementException ex)
                 {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine(ex);
+                    Console.ResetColor();
                     throw;
                 }
             }
 
             query.Click();
+
+            Thread.Sleep(waitingTime);
 
             IAlert alert = driver.SwitchTo().Alert();
 
@@ -129,7 +171,7 @@ namespace TP_Link_Router_Auto_Restart
             {
                 alert.Accept();
             }
-            
+
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("The router is rebooting...");
             Console.ResetColor();
