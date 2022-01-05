@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using OpenQA.Selenium.Chrome;
 
 namespace TP_Link_Router_Auto_Restart
 {
