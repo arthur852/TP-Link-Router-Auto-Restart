@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
 using System.Text;
 
 namespace TP_Link_Router_Auto_Restart
@@ -21,6 +23,20 @@ namespace TP_Link_Router_Auto_Restart
             WaitingTime = waitingTime;
             Headless = headless;
             CreateSettingsFile();
+            CreateDriver();
+        }
+
+        private void CreateDriver()
+        {
+            if (!File.Exists("chromedriver.exe"))
+            {
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile("https://chromedriver.storage.googleapis.com/96.0.4664.45/chromedriver_win32.zip", "chromedriver_win32.zip");
+                    ZipFile.ExtractToDirectory("chromedriver_win32.zip", @".");
+                    File.Delete("chromedriver_win32.zip");
+                }
+            }
         }
 
         private void CreateSettingsFile()
