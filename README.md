@@ -1,4 +1,4 @@
-# Simple program to Reload TP-Link Router [![C# .NET 5.0](https://img.shields.io/badge/C%23-.NET%205.0-blueviolet)](https://dotnet.microsoft.com/en-us/download/dotnet/5.0) [![Selenium](https://img.shields.io/badge/C%23-Selenium-brightgreen)](https://dotnet.microsoft.com/en-us/download/dotnet/5.0) [![C# .NET 5.0](https://img.shields.io/badge/Chrome-Chrome%20Driver-orange)](https://dotnet.microsoft.com/en-us/download/dotnet/5.0)
+# Simple program to Reload TP-Link Router [![C# .NET 5.0](https://img.shields.io/badge/C%23-.NET%205.0-blueviolet)](https://dotnet.microsoft.com/en-us/download/dotnet/5.0) [![Selenium](https://img.shields.io/badge/C%23-Selenium-brightgreen)](https://www.selenium.dev/) [![C# .NET 5.0](https://img.shields.io/badge/Chrome-Chrome%20Driver-orange)](https://chromedriver.storage.googleapis.com/index.html?path=96.0.4664.45/)
 ## Program description:
 It's just a program that can quickly reboot your router TP-Link with Selenium WebDrive in one click.
 ## Features of the program:
