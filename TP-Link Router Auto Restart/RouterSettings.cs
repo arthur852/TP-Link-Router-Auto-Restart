@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Text;
+using System.Xml;
 
 namespace TP_Link_Router_Auto_Restart
 {
@@ -26,101 +27,88 @@ namespace TP_Link_Router_Auto_Restart
             CreateDriver();
         }
 
-        private void CreateDriver()
-        {
-            if (!File.Exists("chromedriver.exe"))
-            {
-                using (var client = new WebClient())
-                {
-                    client.DownloadFile("https://chromedriver.storage.googleapis.com/96.0.4664.45/chromedriver_win32.zip", "chromedriver_win32.zip");
-                    ZipFile.ExtractToDirectory("chromedriver_win32.zip", @".");
-                    File.Delete("chromedriver_win32.zip");
-                }
-            }
-        }
-
         private void CreateSettingsFile()
         {
-            if (File.Exists("Setting.txt"))
+            if (File.Exists("settings.xml")) return;
+
+            var xmlTextWriter = new XmlTextWriter("settings.xml", Encoding.UTF8)
+            {
+                Formatting = Formatting.Indented
+            };
+
+            xmlTextWriter.WriteStartDocument();
+            xmlTextWriter.WriteStartElement("Settings");
+
+            xmlTextWriter.WriteStartElement("Url");
+            xmlTextWriter.WriteString($"{Url.Remove(0, Url.IndexOf(":", StringComparison.Ordinal) + 1).Trim('/')}");
+            xmlTextWriter.WriteEndElement();
+
+            xmlTextWriter.WriteStartElement("Login");
+            xmlTextWriter.WriteString(Login);
+            xmlTextWriter.WriteEndElement();
+
+            xmlTextWriter.WriteStartElement("Password");
+            xmlTextWriter.WriteString(Password);
+            xmlTextWriter.WriteEndElement();
+
+            xmlTextWriter.WriteStartElement("WaitingTime");
+            xmlTextWriter.WriteString(WaitingTime.ToString());
+            xmlTextWriter.WriteEndElement();
+
+            xmlTextWriter.WriteStartElement("HeadlessMode");
+            xmlTextWriter.WriteString(Headless.ToString());
+            xmlTextWriter.WriteEndElement();
+
+            xmlTextWriter.WriteEndDocument();
+            xmlTextWriter.Close();
+        }
+
+        private void CreateDriver()
+        {
+            if (!File.Exists("msedgedriver.exe"))
+            {
+                using var client = new WebClient();
+                client.DownloadFile("https://msedgedriver.azureedge.net/97.0.1072.69/edgedriver_win64.zip", "edgedriver_win64.zip");
+                ZipFile.ExtractToDirectory("edgedriver_win64.zip", @".");
+                File.Delete("edgedriver_win64.zip");
+                Directory.Delete("Driver_Notes", true);
+            }
+            else
             {
                 UpdateSettings();
-                return;
-            }
-
-            try
-            {
-                using StreamWriter sw = new StreamWriter("Setting.txt", false, System.Text.Encoding.Default);
-
-                sw.WriteLine($"Url = \"{Url.Remove(0, Url.IndexOf(":", StringComparison.Ordinal) + 1).Trim('/')}\"");
-                sw.WriteLine($"Login = \"{Login}\"");
-                sw.WriteLine($"Password = \"{Password}\"");
-                sw.WriteLine($"WaitingTime = \"{WaitingTime}\"");
-                sw.WriteLine($"HeadlessMode = \"{Headless}\"");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
             }
         }
 
         public void UpdateSettings()
         {
-            var lines = new List<string>();
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.Load("settings.xml");
 
-            try
+            XmlElement xRootElement = xmlDocument.DocumentElement;
+
+            foreach (XmlElement xNode in xRootElement)
             {
-                using StreamReader sr = new StreamReader("Setting.txt", Encoding.Default);
-                string line;
-                while ((line = sr.ReadLine()) != null)
+                switch (xNode.Name)
                 {
-                    lines.Add(line);
-                }
-
-                foreach (var item in lines)
-                {
-                    line = item;
-
-                    if (line.Contains("Url"))
-                    {
-                        Url = $"http://{line.Remove(0, line.IndexOf('\"')).Trim('\"')}/";
-                    }
-                    else if (line.Contains("Login"))
-                    {
-                        Login = line.Remove(0, line.IndexOf('\"')).Trim('\"');
-                    }
-
-                    else if (line.Contains("Password"))
-                    {
-                        Password = line.Remove(0, line.IndexOf('\"')).Trim('\"');
-                    }
-
-                    else if (line.Contains("WaitingTime"))
-                    {
-                        WaitingTime = ushort.Parse(line.Remove(0, line.IndexOf('\"')).Trim('\"'));
-                    }
-
-                    else if (line.Contains("HeadlessMode"))
-                    {
-                        string temp = line.Remove(0, line.IndexOf('\"')).Trim('\"');
-
-                        if (temp == "true" || temp == "True")
-                        {
+                    case "Url":
+                        Url = $"http://{xNode.InnerText}/";
+                        break;
+                    case "Login":
+                        Login = xNode.InnerText;
+                        break;
+                    case "Password":
+                        Password = xNode.InnerText;
+                        break;
+                    case "WaitingTime":
+                        WaitingTime = ushort.Parse(xNode.InnerText);
+                        break;
+                    case "HeadlessMode":
+                        if (xNode.InnerText is "true" or "True")
                             Headless = true;
-                        }
-                        else if (temp == "false" || temp == "False")
-                        {
+                        else if (xNode.InnerText is "false" or "False")
                             Headless = false;
-                        }
-                    }
+                        break;
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine("Settings.txt has a problem");
-                Console.ResetColor();
             }
         }
     }

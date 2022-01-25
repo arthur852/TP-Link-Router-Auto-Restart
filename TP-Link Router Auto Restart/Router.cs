@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Threading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
 
 namespace TP_Link_Router_Auto_Restart
 {
@@ -13,14 +14,14 @@ namespace TP_Link_Router_Auto_Restart
 
         public Router(string url = "http://192.168.0.1/", string login = "admin", string password = "admin", ushort waitingTime = 400, bool headless = false) : base(url, login, password, waitingTime, headless)
         {
-            var options = new ChromeOptions();
+            var options = new EdgeOptions();
 
             if (Headless)
             {
                 options.AddArgument("headless");
             }
 
-            _driver = new ChromeDriver(options);
+            _driver = new EdgeDriver(options);
         }
 
         private void Restart()
